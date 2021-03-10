@@ -2,3 +2,5 @@ vendor
 *.apkg
 *.log
 go.sum
+*.apk
+*.exe
