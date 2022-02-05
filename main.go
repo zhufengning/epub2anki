@@ -234,6 +234,8 @@ func main() {
 	} else {
 		a := app.New()
 		w := a.NewWindow("Hello")
+		//a.Settings().SetTheme(&Biu{})
+		//uncomment to build with theme(chinese font)
 		but := widget.NewButton("Choose File", func() {})
 		lb = widget.NewLabel("waiting")
 		but.OnTapped = func() {
