@@ -111,14 +111,14 @@ func readToc(zFile *zip.Reader, path string) {
 }
 
 func addToDB(zFile *zip.Reader, path string) {
-	path = "OEBPS/" + path
 	f, e := zFile.Open(path)
-	defer f.Close()
 	if e != nil {
 		lb.SetText(fmt.Sprint(e))
-		log.Fatal(e)
-		return
+		log.Println(e)
+		path = "OEBPS/" + path
+		f, e = zFile.Open(path)
 	}
+	defer f.Close()
 	nr, e := io.ReadAll(f)
 	if e != nil {
 		lb.SetText(fmt.Sprint(e))
@@ -141,11 +141,18 @@ func addToDB(zFile *zip.Reader, path string) {
 		lb.SetText(fmt.Sprint(e))
 		log.Fatal(e)
 	}
+	doc = strings.ReplaceAll(doc, "\"", "'")
 	flds := title + string(rune(31)) + doc
+	flds = strings.ReplaceAll(flds, "\"", "'")
+
 	s = fmt.Sprintf(`
-	INSERT INTO "main"."notes" ("id", "guid", "mid", "mod", "usn", "tags", "flds", "sfld", "csum", "flags", "data") VALUES ('%d', '%d', '1615096069364', '%d', '-1', '', '%s', '%s', '%d', '0', '');
+	INSERT INTO "main"."notes" ("id", "guid", "mid", "mod", "usn", "tags", "flds", "sfld", "csum", "flags", "data") VALUES ('%d', '%d', '1615096069364', '%d', '-1', '', "%s", "%s", '%d', '0', '');
 	`, t, t, t/1000, flds, doc, 1234)
-	db.Exec(s)
+	fmt.Println(s)
+	_, e = db.Exec(s)
+	if e != nil {
+		log.Fatal(e)
+	}
 	time.Sleep(1 * time.Millisecond)
 }
 
@@ -273,7 +280,7 @@ func main() {
 					uri.Close()
 				}, w).Show()
 				but.Enable()
-				lb.SetText("waiting")
+				lb.SetText("finished")
 			}, w)
 			dg.Show()
 		}
