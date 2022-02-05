@@ -4,3 +4,6 @@ vendor
 go.sum
 *.apk
 *.exe
+bundle.go
+bui.go
+.idea
